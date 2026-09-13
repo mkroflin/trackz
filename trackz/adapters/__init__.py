@@ -6,6 +6,7 @@ from trackz.adapters.channels import (
 from trackz.adapters.storage import (
     InMemoryStorage,
     SQLiteStorage,
+    GoogleSheetsStorage,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "WhatsAppChannelAdapter",
     "InMemoryStorage",
     "SQLiteStorage",
+    "GoogleSheetsStorage",
 ]
