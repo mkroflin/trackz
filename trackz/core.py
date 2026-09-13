@@ -44,7 +44,16 @@ class ChannelAdapter(Protocol):
     def send_text(self, recipient_id: str, text: str) -> bool:
         ...
 
-    def send_card(self, recipient_id: str, card: InteractiveCard) -> bool:
+    def send_card(self, recipient_id: str, card: InteractiveCard) -> Any:
+        ...
+
+    def edit_card(
+        self,
+        recipient_id: str,
+        message_id: Any,
+        text: str,
+        buttons: Optional[List[Any]] = None
+    ) -> bool:
         ...
 
 
