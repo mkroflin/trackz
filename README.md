@@ -27,20 +27,20 @@ from trackz.adapters import SQLiteStorage, MockChannelAdapter
 
 # 1. Define Domain Schema
 class FoodItem(BaseModel):
-    datum: str = Field(description="Date formatted as D.M.YYYY.")
-    obrok: str = Field(description="Meal type (e.g. Ručak)")
-    hrana: str = Field(description="Food item name")
-    kolicina: str = Field(description="Portion size/weight")
-    kalorije: float = Field(description="Calories in kcal")
-    proteini_g: float = Field(description="Protein in grams")
-    ugljikohidrati_g: float = Field(description="Carbs in grams")
-    masti_g: float = Field(description="Fats in grams")
+    date: str = Field(description="Date formatted as D.M.YYYY.")
+    meal: str = Field(description="Meal type (e.g. Lunch)")
+    food: str = Field(description="Food item name")
+    quantity: str = Field(description="Portion size/weight")
+    calories: float = Field(description="Calories in kcal")
+    protein_g: float = Field(description="Protein in grams")
+    carbs_g: float = Field(description="Carbs in grams")
+    fat_g: float = Field(description="Fats in grams")
 
 class ParsedMealResponse(BaseModel):
-    sažetak_obroka: str
+    meal_summary: str
     items: List[FoodItem]
-    ukupno_kalorija: float
-    ukupno_proteina: float
+    total_calories: float
+    total_protein: float
 
 # 2. Instantiate App
 domain = DomainConfig(

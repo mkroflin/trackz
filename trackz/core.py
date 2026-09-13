@@ -76,7 +76,11 @@ class DomainConfig(Generic[T_Item, T_Response]):
 
     def _default_format_card(self, response: T_Response, card_id: str) -> InteractiveCard:
         items = self.extract_items_fn(response)
-        summary = getattr(response, "merchant_summary", None) or getattr(response, "sažetak_obroka", None) or f"{self.name} Log"
+        summary = (
+            getattr(response, "merchant_summary", None)
+            or getattr(response, "meal_summary", None)
+            or f"{self.name} Log"
+        )
         
         lines = [f"📋 *{summary}* ({len(items)} items):\n"]
         for idx, item in enumerate(items, 1):

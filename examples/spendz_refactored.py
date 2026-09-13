@@ -9,15 +9,15 @@ from trackz.adapters import SQLiteStorage, MockChannelAdapter
 
 
 class ExpenseRow(BaseModel):
-    datum: str = Field(description="Date formatted strictly as D.M.YYYY.")
-    predmet: str = Field(description="Item name (e.g. 'Posni sir', 'Gorivo', 'Kava')")
-    kolicina: str = Field(default="", description="Item quantity or weight if specified")
-    trgovina: str = Field(default="", description="Store/merchant name")
-    kategorija: str = Field(description="Expense category")
-    iznos: float = Field(description="Amount in EUR")
-    ne_ukljuci: bool = Field(default=False, description="Exclude from totals")
-    komentar: str = Field(default="", description="Optional context or location")
-    osoba: Optional[str] = Field(default=None, description="Payer person name")
+    date: str = Field(description="Date formatted strictly as D.M.YYYY.")
+    item: str = Field(description="Item name (e.g. 'Cottage cheese', 'Fuel', 'Coffee')")
+    quantity: str = Field(default="", description="Item quantity or weight if specified")
+    store: str = Field(default="", description="Store/merchant name")
+    category: str = Field(description="Expense category")
+    amount: float = Field(description="Amount in EUR")
+    exclude: bool = Field(default=False, description="Exclude from totals")
+    comment: str = Field(default="", description="Optional context or location")
+    person: Optional[str] = Field(default=None, description="Payer person name")
 
 
 class ParsedExpenseResponse(BaseModel):

@@ -17,25 +17,25 @@ from trackz.adapters.channels import MockChannelAdapter
 # -----------------------------------------------------------------------------
 
 class FoodItem(BaseModel):
-    datum: str = Field(description="Date formatted as D.M.YYYY. (e.g. '27.8.2026.')")
-    obrok: str = Field(description="Meal type: 'Doručak', 'Ručak', 'Večera', 'Užina', 'Suplementi'")
-    hrana: str = Field(description="Food item or ingredient name (e.g. 'Pileća prsa', 'Riža', 'Maslinovo ulje')")
-    kolicina: str = Field(description="Portion size or weight (e.g. '200g', '1 medium apple', '2 eggs')")
-    kalorije: float = Field(description="Estimated energy in kcal (e.g. 330.0)")
-    proteini_g: float = Field(description="Estimated protein content in grams (e.g. 42.5)")
-    ugljikohidrati_g: float = Field(description="Estimated carbohydrates in grams (e.g. 50.0)")
-    masti_g: float = Field(description="Estimated fat content in grams (e.g. 12.0)")
-    napomena: Optional[str] = Field(default="", description="Optional context (e.g. 'Grilled', 'Sugar-free')")
+    date: str = Field(description="Date formatted as D.M.YYYY. (e.g. '27.8.2026.')")
+    meal: str = Field(description="Meal type: 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Supplements'")
+    food: str = Field(description="Food item or ingredient name (e.g. 'Chicken breast', 'Rice', 'Olive oil')")
+    quantity: str = Field(description="Portion size or weight (e.g. '200g', '1 medium apple', '2 eggs')")
+    calories: float = Field(description="Estimated energy in kcal (e.g. 330.0)")
+    protein_g: float = Field(description="Estimated protein content in grams (e.g. 42.5)")
+    carbs_g: float = Field(description="Estimated carbohydrates in grams (e.g. 50.0)")
+    fat_g: float = Field(description="Estimated fat content in grams (e.g. 12.0)")
+    notes: Optional[str] = Field(default="", description="Optional context (e.g. 'Grilled', 'Sugar-free')")
 
 
 class ParsedMealResponse(BaseModel):
-    sažetak_obroka: str = Field(description="Short overall summary of the meal (e.g. 'Grilled chicken breast with brown rice and salad')")
+    meal_summary: str = Field(description="Short overall summary of the meal (e.g. 'Grilled chicken breast with brown rice and salad')")
     items: List[FoodItem] = Field(description="List of extracted ingredient items")
-    ukupno_kalorija: float = Field(description="Total meal energy in kcal")
-    ukupno_proteina: float = Field(description="Total meal protein in grams")
-    ukupno_ugljikohidrata: float = Field(description="Total meal carbohydrates in grams")
-    ukupno_masti: float = Field(description="Total meal fats in grams")
-    savjet_nutricionista: Optional[str] = Field(default=None, description="Optional brief dietary insight or recommendation")
+    total_calories: float = Field(description="Total meal energy in kcal")
+    total_protein: float = Field(description="Total meal protein in grams")
+    total_carbs: float = Field(description="Total meal carbohydrates in grams")
+    total_fat: float = Field(description="Total meal fats in grams")
+    nutritionist_advice: Optional[str] = Field(default=None, description="Optional brief dietary insight or recommendation")
 
 
 # -----------------------------------------------------------------------------
