@@ -15,14 +15,19 @@ logger = logging.getLogger("trackz.parser")
 class GeminiStructuredParser:
     """
     Multimodal Gemini parser enforcing Pydantic structured output.
+    Supports dynamic model selection (e.g. lightweight models for cost optimization).
     """
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "gemini-2.5-flash"
+        model_name: str = "gemini-2.5-flash",
+        vision_model: Optional[str] = None,
+        text_model: Optional[str] = None,
     ):
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         self.model_name = model_name
+        self.vision_model = vision_model or model_name
+        self.text_model = text_model or model_name
         self._client: Optional[genai.Client] = None
 
     def _get_client(self, override_key: Optional[str] = None) -> genai.Client:
@@ -41,18 +46,24 @@ class GeminiStructuredParser:
         input_data: Union[str, bytes, List[Any]],
         mime_type: Optional[str] = None,
         taxonomy: Optional[List[str]] = None,
-        override_api_key: Optional[str] = None
+        override_api_key: Optional[str] = None,
+        model: Optional[str] = None,
     ) -> T_Response:
         client = self._get_client(override_key=override_api_key)
         start_time = time.perf_counter()
 
         formatted_contents = []
+        is_media = False
         if isinstance(input_data, list):
             formatted_contents = input_data
+            is_media = any(isinstance(x, types.Part) or isinstance(x, bytes) for x in input_data)
         elif isinstance(input_data, bytes) and mime_type:
             formatted_contents = [types.Part.from_bytes(data=input_data, mime_type=mime_type)]
+            is_media = True
         else:
             formatted_contents = [input_data]
+
+        selected_model = model or (self.vision_model if is_media else self.text_model) or self.model_name
 
         system_instruction = domain.system_instruction
         if taxonomy:
@@ -61,7 +72,7 @@ class GeminiStructuredParser:
 
         try:
             response = client.models.generate_content(
-                model=self.model_name,
+                model=selected_model,
                 contents=formatted_contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
@@ -75,7 +86,7 @@ class GeminiStructuredParser:
                 "event": "trackz_parse_success",
                 "domain": domain.name,
                 "latency_ms": latency_ms,
-                "model": self.model_name
+                "model": selected_model
             }))
 
             if hasattr(response, "parsed") and response.parsed:
