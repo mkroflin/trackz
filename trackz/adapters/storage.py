@@ -136,6 +136,8 @@ class GoogleSheetsStorage:
         self._service = None
         self._taxonomy_cache: List[str] = []
         self._taxonomy_cache_time: float = 0.0
+        self._items_cache: List[Dict[str, Any]] = []
+        self._items_cache_time: float = 0.0
 
     def _get_service(self):
         if self._service:
@@ -212,15 +214,28 @@ class GoogleSheetsStorage:
                 body={"values": values},
             ).execute()
             logger.info(f"[GoogleSheetsStorage] Appended {len(values)} rows to {self.spreadsheet_id} ({self.sheet_name})")
+            # Invalidate items cache so next read sees the fresh rows
+            self._items_cache = []
+            self._items_cache_time = 0.0
             return True
         except Exception as e:
             logger.error(f"[GoogleSheetsStorage] Error appending rows: {e}")
             return False
 
-    def fetch_items(self, user_id: str, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def fetch_items(
+        self,
+        user_id: str,
+        filters: Optional[Dict[str, Any]] = None,
+        force_refresh: bool = False
+    ) -> List[Dict[str, Any]]:
+        import time
+        now = time.time()
+        if not force_refresh and self._items_cache and (now - self._items_cache_time < self.cache_ttl_seconds):
+            return self._items_cache
+
         service = self._get_service()
         if not service:
-            return []
+            return self._items_cache
 
         try:
             target_range = f"{self.sheet_name}!A:Z"
@@ -244,10 +259,12 @@ class GoogleSheetsStorage:
                     row_dict[col_name] = val
                 parsed_rows.append(row_dict)
 
+            self._items_cache = parsed_rows
+            self._items_cache_time = now
             return parsed_rows
         except Exception as e:
             logger.error(f"[GoogleSheetsStorage] Error fetching rows: {e}")
-            return []
+            return self._items_cache
 
     def fetch_taxonomy(self, user_id: str) -> List[str]:
         if not self.taxonomy_range:
